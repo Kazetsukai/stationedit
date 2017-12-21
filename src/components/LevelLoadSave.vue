@@ -54,9 +54,9 @@ export default {
 
               var pos = obj.dom.querySelector("WorldPosition");
               obj.pos = { 
-                x: pos.querySelector("x").innerHTML, 
-                y: pos.querySelector("y").innerHTML, 
-                z: pos.querySelector("z").innerHTML
+                x: pos.querySelector("x").innerHTML * 1, 
+                y: pos.querySelector("y").innerHTML * 1, 
+                z: pos.querySelector("z").innerHTML * 1
               };
             }
             obj.refresh();
