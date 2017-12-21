@@ -16,6 +16,19 @@ export default {
       renderer.render( scene, camera );
     }
 
+    var oldX, oldY;
+    function mouseMove(ev) {
+      if (oldX) {
+        camera.rotation.y += ev.movementX / 1000;
+        camera.rotation.x += ev.movementY / 1000;
+
+        console.log(ev);
+      }
+
+      oldX = ev.offsetX;
+      oldY = ev.offsetY;
+    }
+
     function init(world) {
       camera = new PerspectiveCamera( 70, 1, 1, 1000 );
       
@@ -34,6 +47,19 @@ export default {
       renderer.setPixelRatio( window.devicePixelRatio );
       renderer.setSize( 600, 600 );
       vm.$el.appendChild( renderer.domElement );
+
+      // Set up mouse locking
+      
+      renderer.domElement.onmousedown = function (ev) {
+        if (ev.button === 2) {
+          renderer.domElement.requestPointerLock();
+          document.addEventListener("mousemove", mouseMove, false);
+        }
+      };
+      renderer.domElement.onmouseup = function (ev) {
+        //document.exitPointerLock();
+        //document.removeEventListener("mousemove", mouseMove, false);
+      };
 
       dirLight = new DirectionalLight( 0xffffdd, 0.5 );
       dirLight.position.set( -10, 300.75, 500 );
