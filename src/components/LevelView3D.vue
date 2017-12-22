@@ -3,26 +3,47 @@
 </template>
 
 <script>
-import {Scene, PerspectiveCamera, WebGLRenderer, BoxBufferGeometry, MeshPhongMaterial, Mesh, SmoothShading, DirectionalLight, AmbientLight, Group} from 'three';
+import {Scene, PerspectiveCamera, WebGLRenderer, BoxBufferGeometry, MeshPhongMaterial, Mesh, SmoothShading, DirectionalLight, AmbientLight, Group, Quaternion, Vector3} from 'three';
 
 export default {
   name: 'LevelView3D',
   mounted: function() {
-    var intervalID;
-    var renderer, scene, camera, levelGroup, dirLight, ambLight;
-    var vm = this;
+    let didSetup;
+    let renderer, scene, camera, levelGroup, dirLight, ambLight;
+    let vm = this;
+
+    let keys = [];
+    window.onkeyup = function(e) {keys[e.keyCode]=false;}
+    window.onkeydown = function(e) {keys[e.keyCode]=true;}
+
+    let rotX = 0, rotY = 0;
+
+    let renderFunc = render;
 
     function render() {
+      let forward = camera.getWorldDirection();
+      forward.multiplyScalar(0.1);
+
+      // Get keys
+      if (keys[87]) { // W
+        camera.position.add(forward);
+      }
+
+      // Update camera rotation
+      camera.setRotationFromQuaternion(new Quaternion(0, 0, 0, 1));
+      camera.rotateOnWorldAxis(new Vector3(1, 0, 0), rotX);
+      camera.rotateOnWorldAxis(new Vector3(0, 1, 0), rotY);
+
+
       renderer.render( scene, camera );
+      window.requestAnimationFrame(renderFunc);
     }
 
-    var oldX, oldY;
+    let oldX, oldY;
     function mouseMove(ev) {
       if (oldX) {
-        camera.rotation.y += ev.movementX / 1000;
-        camera.rotation.x += ev.movementY / 1000;
-
-        console.log(ev);
+        rotY -= ev.movementX / 1000;
+        rotX -= ev.movementY / 1000;
       }
 
       oldX = ev.offsetX;
@@ -38,10 +59,10 @@ export default {
       camera.rotation.x = -0.8;
 
       scene = new Scene();
-      var geometry = new BoxBufferGeometry( 1, 1, 1 );
-      var bigGeo = new BoxBufferGeometry( 2, 2, 2 );
-      var whiteMat = new MeshPhongMaterial( { color: 0xffffff, shading: SmoothShading } );
-      var redMat = new MeshPhongMaterial( { color: 0xff1111, shading: SmoothShading } );
+      let geometry = new BoxBufferGeometry( 1, 1, 1 );
+      let bigGeo = new BoxBufferGeometry( 2, 2, 2 );
+      let whiteMat = new MeshPhongMaterial( { color: 0xffffff, shading: SmoothShading } );
+      let redMat = new MeshPhongMaterial( { color: 0xff1111, shading: SmoothShading } );
 
       renderer = new WebGLRenderer();
       renderer.setPixelRatio( window.devicePixelRatio );
@@ -49,16 +70,20 @@ export default {
       vm.$el.appendChild( renderer.domElement );
 
       // Set up mouse locking
-      
+      renderer.domElement.oncontextmenu = function (ev) {
+        return false;
+      }
       renderer.domElement.onmousedown = function (ev) {
         if (ev.button === 2) {
           renderer.domElement.requestPointerLock();
           document.addEventListener("mousemove", mouseMove, false);
         }
+        return false;
       };
       renderer.domElement.onmouseup = function (ev) {
-        //document.exitPointerLock();
-        //document.removeEventListener("mousemove", mouseMove, false);
+        document.exitPointerLock();
+        document.removeEventListener("mousemove", mouseMove, false);
+        return false;
       };
 
       dirLight = new DirectionalLight( 0xffffdd, 0.5 );
@@ -71,7 +96,7 @@ export default {
       levelGroup = new Group();
 
       world.things.forEach((thing) => {
-        var mesh;
+        let mesh;
         
         if (thing.type.indexOf('StructureFrame', 0) === 0) {
           mesh = new Mesh( bigGeo, whiteMat );
@@ -91,15 +116,14 @@ export default {
 
     document.bus.$on("world-loaded", (world) => {
       // Cleanup
-      if (intervalID) {
-        clearInterval(intervalID);
+      if (didSetup) {
         vm.$el.removeChild( renderer.domElement );
       }
 
       init(world);
 
-      // New render tick
-      intervalID = setInterval(render, 16);
+      window.requestAnimationFrame(render);
+      didSetup = true;
     });
   }
 }
