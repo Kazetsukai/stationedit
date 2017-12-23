@@ -1,5 +1,5 @@
 <template>
-	<div class="view3d"></div>
+	<div class="level-view"></div>
 </template>
 
 <script>
