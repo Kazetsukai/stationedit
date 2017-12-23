@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <LevelLoadSave />
-    <LevelView3D />
+    <LevelLoadSave :world="world" />
+    <LevelView3D :world="world" />
   </div>
 </template>
 
@@ -11,6 +11,17 @@ import LevelLoadSave from './components/LevelLoadSave';
 
 export default {
   name: 'app',
+  data () {
+    return {
+      world: undefined
+    }
+  },
+  created () {
+    var vm = this;
+    document.bus.$on("world-loaded", (world) => {
+      vm.world = world;
+    });
+  },
   components: {
     LevelView3D,
     LevelLoadSave

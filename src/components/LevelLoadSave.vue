@@ -14,20 +14,14 @@
 </template>
 
 <script>
+import WorldService from '@/services/WorldService';
+
 export default {
   name: 'LevelLoadSave',
-  created () {
-    var vm = this;
-    document.bus.$on("world-loaded", (world) => {
-      vm.world = world;
-    });
-  },
+  props: ['world'],
   data () {
     return {
-      world: undefined,
       loadWorld (el) {
-        var world = {};
-        
         var input = el.target;
         var file = input.files[0];
         var reader = new FileReader();
@@ -38,34 +32,7 @@ export default {
           var parse = new DOMParser();
           var dom = parse.parseFromString(ev.target.result, "text/xml");
           
-          world.dom = dom;
-          world.things = [];
-
-          // Process all the things
-          var things = dom.querySelectorAll("ThingSaveData");
-          
-          things.forEach(function(thing) { 
-            var obj = {
-              dom: thing
-            }
-
-            obj.refresh = function() {
-              obj.type = obj.dom.querySelector("PrefabName").innerHTML;
-
-              var pos = obj.dom.querySelector("WorldPosition");
-              obj.pos = { 
-                x: pos.querySelector("x").innerHTML * 1, 
-                y: pos.querySelector("y").innerHTML * 1, 
-                z: pos.querySelector("z").innerHTML * 1
-              };
-            }
-            obj.refresh();
-
-            world.things.push(obj);
-          });
-
-          world.title = things.length + " loaded things.";
-
+          let world = WorldService.createWorldFromXML(dom);
 
           document.bus.$emit("world-loaded", world);
 
