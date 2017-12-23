@@ -68,23 +68,6 @@ function init(world) {
   let redMat = new MeshPhongMaterial( { color: 0xff1111, shading: SmoothShading } );
 
 
-  // Set up mouse locking
-  renderer.domElement.oncontextmenu = function (ev) {
-    return false;
-  }
-  renderer.domElement.onmousedown = function (ev) {
-    if (ev.button === 2) {
-      renderer.domElement.requestPointerLock();
-      document.addEventListener("mousemove", mouseMove, false);
-    }
-    return false;
-  };
-  renderer.domElement.onmouseup = function (ev) {
-    document.exitPointerLock();
-    document.removeEventListener("mousemove", mouseMove, false);
-    return false;
-  };
-
   dirLight = new DirectionalLight( 0xffffdd, 0.5 );
   dirLight.position.set( -10, 300.75, 500 );
   scene.add( dirLight );
@@ -118,11 +101,6 @@ export default {
   props: [ 'world' ],
   watch: {
     world: function (world) {
-      // Cleanup
-      if (didSetup) {
-        vm.$el.removeChild( renderer.domElement );
-      }
-
       init(world);
 
       window.requestAnimationFrame(render);
@@ -139,7 +117,24 @@ export default {
     renderer = new WebGLRenderer();
     renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize( 600, 600 );
-    this.$el.appendChild( renderer.domElement );
+    this.$el.appendChild( renderer.domElement );    
+
+    // Set up mouse locking
+    renderer.domElement.oncontextmenu = function (ev) {
+      return false;
+    }
+    renderer.domElement.onmousedown = function (ev) {
+      if (ev.button === 2) {
+        renderer.domElement.requestPointerLock();
+        document.addEventListener("mousemove", mouseMove, false);
+      }
+      return false;
+    };
+    renderer.domElement.onmouseup = function (ev) {
+      document.exitPointerLock();
+      document.removeEventListener("mousemove", mouseMove, false);
+      return false;
+    };
   }
 }
 </script>
