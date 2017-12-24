@@ -17,7 +17,6 @@
 import WorldService from '@/services/WorldService';
 
 export default {
-  name: 'LevelLoadSave',
   props: ['world'],
   data () {
     return {

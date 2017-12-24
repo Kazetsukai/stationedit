@@ -1,11 +1,14 @@
 <template>
   <div id="app">
-    <div id="side-panel">
+    <div id="left-panel">
       <LevelLoadSave :world="world" />
       <PlayerList :players="players" />
     </div>
     <div id="center">
-      <LevelView3D :world="world" /> 
+      <LevelView3D :world="world" :selected="selected" />
+    </div>
+    <div id="right-panel">
+      <ThingInspector :thing="selected" />
     </div>
   </div>
 </template>
@@ -14,6 +17,7 @@
 import LevelView3D from './components/LevelView3D';
 import LevelLoadSave from './components/LevelLoadSave';
 import PlayerList from './components/PlayerList';
+import ThingInspector from './components/ThingInspector';
 
 import { filter } from 'lodash'
 
@@ -21,24 +25,32 @@ export default {
   name: 'app',
   data () {
     return {
-      world: undefined
+      world: {},
+      selected: {}
     }
   },
   computed: {
     players () {
-      return this.world ? filter(this.world.things, (t) => { return t.type === 'Character' }) : [];
+      return filter(this.world.things, (t) => { return t && t.type === 'Character' });
     }
   },
   created () {
-    var vm = this;
+    let vm = this;
+    let oldMaterial;
+
     document.bus.$on("world-loaded", (world) => {
       vm.world = world;
+    });
+    document.bus.$on("thing-selected", (thing) => {
+      vm.selected = thing;
+      // Mesh change here
     });
   },
   components: {
     LevelView3D,
     LevelLoadSave,
-    PlayerList
+    PlayerList,
+    ThingInspector
   }
 }
 </script>
@@ -54,7 +66,7 @@ export default {
   display: flex;
 }
 
-#side-panel {
+#left-panel {
   display: flex;
   flex-direction: column;
 }

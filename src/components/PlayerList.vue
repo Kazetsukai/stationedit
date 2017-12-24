@@ -2,7 +2,7 @@
   <div>
     <h3>Players:</h3>
     <ul class="player-list">
-      <li v-for="player in players">
+      <li v-for="player in players" @click="selectPlayer(player)">
         {{player.name}}
       </li>
     </ul>
@@ -11,8 +11,12 @@
 
 <script>
 export default {
-  name: 'app',
-  props: ['players']
+  props: ['players'],
+  methods: {
+    selectPlayer: function(player) {
+      document.bus.$emit("thing-selected", player);
+    }
+  }
 }
 </script>
 

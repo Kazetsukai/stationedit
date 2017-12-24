@@ -12,6 +12,7 @@ export default class WorldService {
       let pos = thing.querySelector("WorldPosition");
       let customName = thing.querySelector("CustomName");
       let obj = {
+        id: thing.querySelector("ReferenceId").innerHTML * 1,
         dom: thing,
         type: thing.querySelector("PrefabName").innerHTML,
         name: customName.innerHTML,
@@ -22,7 +23,14 @@ export default class WorldService {
         }
       };
 
-      world.things.push(obj);
+      world.things[obj.id] = obj;
+    });
+
+    world.things.forEach((t) => {
+      let id = t.dom.querySelector("ParentReferenceId");
+      if (id) {
+        t.parent = world.things[id.innerHTML];
+      }
     });
 
     world.title = things.length + " loaded things.";
