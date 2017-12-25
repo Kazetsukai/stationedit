@@ -8,7 +8,7 @@ export default class WorldService {
     // Process all the things
     let things = worldXML.querySelectorAll("ThingSaveData");
     
-    things.forEach(function(thing) { 
+    things.forEach(function(thing) {
       let pos = thing.querySelector("WorldPosition");
       let customName = thing.querySelector("CustomName");
       let obj = {
@@ -20,7 +20,8 @@ export default class WorldService {
           x: pos.querySelector("x").innerHTML * 1, 
           y: pos.querySelector("y").innerHTML * 1, 
           z: pos.querySelector("z").innerHTML * 1
-        }
+        },
+        children: []
       };
 
       world.things[obj.id] = obj;
@@ -30,8 +31,12 @@ export default class WorldService {
       let id = t.dom.querySelector("ParentReferenceId");
       if (id) {
         t.parent = world.things[id.innerHTML];
+        if (t.parent) {
+          world.things[id.innerHTML].children.push(t);
+        }
       }
     });
+
 
     world.title = things.length + " loaded things.";
 

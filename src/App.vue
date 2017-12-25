@@ -2,7 +2,8 @@
   <div id="app">
     <div id="left-panel">
       <LevelLoadSave :world="world" />
-      <PlayerList :players="players" />
+      <h3>Players:</h3>
+      <ThingList :things="players" />
     </div>
     <div id="center">
       <LevelView3D :world="world" :selected="selected" />
@@ -16,7 +17,7 @@
 <script>
 import LevelView3D from './components/LevelView3D';
 import LevelLoadSave from './components/LevelLoadSave';
-import PlayerList from './components/PlayerList';
+import ThingList from './components/ThingList';
 import ThingInspector from './components/ThingInspector';
 
 import { filter } from 'lodash'
@@ -49,7 +50,7 @@ export default {
   components: {
     LevelView3D,
     LevelLoadSave,
-    PlayerList,
+    ThingList,
     ThingInspector
   }
 }

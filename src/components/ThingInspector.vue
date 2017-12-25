@@ -5,12 +5,19 @@
       <li>{{thing.type}}</li>
       <li>{{thing.pos}}</li>
     </ul>
+    <h5>Contents:</h5>
+    <ThingList :things="thing.children" />
   </div>
 </template>
 
 <script>
+import ThingList from './ThingList';
+
 export default {
-  props: ['thing']
+  props: ['thing'],
+  components: {
+    ThingList
+  }
 }
 </script>
 
