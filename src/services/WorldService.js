@@ -26,7 +26,7 @@ export default class WorldService {
 
       world.things[obj.id] = obj;
     });
-
+    
     world.things.forEach((t) => {
       let id = t.dom.querySelector("ParentReferenceId");
       if (id) {
@@ -41,5 +41,9 @@ export default class WorldService {
     world.title = things.length + " loaded things.";
 
     return world;
+  }
+
+  static addTerrainFromBin(world, worldBIN) {
+    
   }
 }
