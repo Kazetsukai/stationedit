@@ -22,5 +22,7 @@ export default {
 </script>
 
 <style scoped>
-  
+.inspector {
+  margin: 20px;
+}
 </style>
