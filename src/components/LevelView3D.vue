@@ -71,7 +71,7 @@ function init(world) {
   scene = new Scene();
 
   let smlGeo = new BoxBufferGeometry( 0.2, 0.2, 0.2 );
-  let midGeo = new BoxBufferGeometry( 1, 1, 1 );
+  let midGeo = new BoxBufferGeometry( 0.4, 0.4, 0.4 );
   let bigGeo = new BoxBufferGeometry( 2, 2, 2 );
   let whiteMat = new MeshPhongMaterial( { color: 0xffffff } );
   let redMat = new MeshPhongMaterial( { color: 0xff1111 } );
