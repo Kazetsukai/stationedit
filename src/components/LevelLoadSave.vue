@@ -58,7 +58,7 @@ export default {
         reader.onload = function(ev) {
           let world = vm.world;
           let buffer = new Uint8Array(ev.target.result, 12);
-          let outBuffer = new Uint8Array(10240000);
+          let outBuffer = new Uint8Array(102400000);
 
           console.log(decompressBlock(buffer, outBuffer, 0, buffer.byteLength, 0));
         
@@ -68,6 +68,7 @@ export default {
           // window.open(objectUrl);
 
           world.voxels = loadVoxels(outBuffer);
+          drawVoxels(world.voxels);
 
           document.bus.$emit("world-loaded", world);
 
@@ -89,10 +90,9 @@ function loadVoxels(bin) {
   let dv = new DataView(bin.buffer);
 
   let chunkCount = dv.getInt32(0, true);
-  let chunkSize = dv.getInt32(1, true);
+  let chunkSize = dv.getInt32(4, true);
 
-  console.log(bin[0]);
-  console.log(bin[1]);
+  let chunks = [];
 
   let idx = 8;
   for (let i = 0; i < chunkCount; i++) {
@@ -104,13 +104,61 @@ function loadVoxels(bin) {
 
     console.log(""+x+" | "+y+" | "+z+" |  *" + num);
 
-    idx += num*4;
+    let arrSize = chunkSize*chunkSize*chunkSize;
+    console.log(arrSize);
+    let chunkArray = new Array(arrSize);
+
+    for (let j = 0; j < num; j++) {
+      let offset = dv.getInt16(idx+0, true);
+      let [xOffset, yOffset, zOffset] = xyz(offset);
+
+      chunkArray[offset] = {
+        xOffset, yOffset, zOffset,
+        type: dv.getInt8(idx+2, true),
+        density: dv.getInt8(idx+3, true),
+      };
+      idx += 4;
+    }
+
+    chunks.push({
+      data: chunkArray,
+      x: x,
+      y: y,
+      z: z
+    });
   }
 
   console.log("[} " + chunkCount + " chunks * " + chunkSize);
-
-
+  return chunks;
 }
+
+function xyz(offset) {
+  return [offset % 8, offset / 8 % 8, offset / 64];
+}
+
+function drawVoxels(chunks) {
+  let canvas = document.createElement("canvas");
+  canvas.style.width = "512px";
+  canvas.style.height = "512px";
+  let ctx = canvas.getContext('2d');
+
+  document.querySelector("body").appendChild(canvas);
+
+  ctx.fillStyle = 'rgb(0, 0, 0)';
+  ctx.fillRect(0, 0, 512, 512);
+
+  for (let chunk of chunks) {
+
+    for (let c of chunk.data) {
+      if (!c) continue;
+      let [x, y, z] = [c.xOffset + chunk.x + 100, c.yOffset + chunk.y, c.zOffset + chunk.z + 100]
+      let val = 128 + y * 5;
+      ctx.fillStyle = 'rgb('+val+', '+val+', '+val+')';
+      ctx.fillRect(x, z, 1, 1);
+    }
+  }
+}
+
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

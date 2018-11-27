@@ -17,8 +17,10 @@ let selectedMaterial;
 let renderFunc = render;
 let keys = [];
 
+let forward = new Vector3(1, 0, 0);
+
 function render() {
-  let forward = camera.getWorldDirection();
+  camera.getWorldDirection(forward);
   forward.multiplyScalar(0.3);
 
   // Get keys
@@ -71,10 +73,10 @@ function init(world) {
   let smlGeo = new BoxBufferGeometry( 0.2, 0.2, 0.2 );
   let midGeo = new BoxBufferGeometry( 1, 1, 1 );
   let bigGeo = new BoxBufferGeometry( 2, 2, 2 );
-  let whiteMat = new MeshPhongMaterial( { color: 0xffffff, shading: SmoothShading } );
-  let redMat = new MeshPhongMaterial( { color: 0xff1111, shading: SmoothShading } );
-  let greenMat = new MeshPhongMaterial( { color: 0x11ff11, shading: SmoothShading } );
-  selectedMaterial = new MeshPhongMaterial( { color: 0xffff11, shading: SmoothShading } );
+  let whiteMat = new MeshPhongMaterial( { color: 0xffffff } );
+  let redMat = new MeshPhongMaterial( { color: 0xff1111 } );
+  let greenMat = new MeshPhongMaterial( { color: 0x11ff11 } );
+  selectedMaterial = new MeshPhongMaterial( { color: 0xffff11 } );
 
 
   dirLight = new DirectionalLight( 0xffffdd, 0.5 );
