@@ -4,6 +4,8 @@
 
 Doesn't currently have any editing functionality.
 
+Latest built version available at https://github.com/Kazetsukai/stationedit
+
 ## Build Setup
 
 ``` bash
