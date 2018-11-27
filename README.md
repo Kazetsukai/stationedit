@@ -4,7 +4,7 @@
 
 Doesn't currently have any editing functionality.
 
-Latest built version available at https://github.com/Kazetsukai/stationedit
+Latest built version available at https://kazetsukai.github.io/stationedit
 
 ## Build Setup
 
