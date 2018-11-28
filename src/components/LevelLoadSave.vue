@@ -128,18 +128,20 @@ function loadVoxels(bin) {
     });
   }
 
+  chunks.sort((a, b) => (a.z-a.x) - (b.z-b.x));
+
   console.log("[} " + chunkCount + " chunks * " + chunkSize);
   return chunks;
 }
 
 function xyz(offset) {
-  return [offset % 8, offset / 8 % 8, offset / 64];
+  return [offset % 8, Math.floor((offset / 8) % 8), Math.floor(offset / 64)];
 }
 
 function drawVoxels(chunks) {
   let canvas = document.createElement("canvas");
-  canvas.style.width = "512px";
-  canvas.style.height = "512px";
+  canvas.width = 512;
+  canvas.height = 512;
   let ctx = canvas.getContext('2d');
 
   document.querySelector("body").appendChild(canvas);
@@ -150,11 +152,13 @@ function drawVoxels(chunks) {
   for (let chunk of chunks) {
 
     for (let c of chunk.data) {
-      if (!c) continue;
-      let [x, y, z] = [c.xOffset + chunk.x + 100, c.yOffset + chunk.y, c.zOffset + chunk.z + 100]
-      let val = 128 + y * 5;
+      if (!c || c <= 0) continue;
+      let [x, y, z] = [c.xOffset + chunk.x + 100, c.yOffset + chunk.y + 20, c.zOffset + chunk.z + 100]
+      let val = y * 10;
       ctx.fillStyle = 'rgb('+val+', '+val+', '+val+')';
-      ctx.fillRect(x, z, 1, 1);
+      if (c.type > 1)
+        ctx.fillStyle = 'rgb('+val+', 0, 0)';
+      ctx.fillRect(x/2 + z/2, z/2 - x/2 - y + 256, 1, 1);
     }
   }
 }
